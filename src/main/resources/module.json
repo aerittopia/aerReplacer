@@ -1,0 +1,12 @@
+{
+  "runtimeModule": false,
+  "storesSensitiveData": true,
+  "main": "com.aeritt.aerreplacer.Replacer",
+  "name": "${project.artifactId}",
+  "group": "com.aeritt.aerreplacer",
+  "author": "whereareiam",
+  "version": "${project.version}",
+  "website": "whereareiam.me, aeritt.com",
+  "description": "Replaces placeholders in templates",
+  "minJavaVersionId": 17
+}
