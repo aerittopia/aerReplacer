@@ -10,11 +10,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Singleton
-public class ReplacerConfig extends AbstractModule {
+public class ModuleConfig extends AbstractModule {
     private final CommandProvider commandProvider;
     private final EventManager eventManager;
 
-    public ReplacerConfig(CommandProvider commandProvider, EventManager eventManager) {
+    public ModuleConfig(CommandProvider commandProvider, EventManager eventManager) {
         this.commandProvider = commandProvider;
         this.eventManager = eventManager;
     }

@@ -12,12 +12,12 @@ import eu.cloudnetservice.driver.module.ModuleTask;
 import eu.cloudnetservice.driver.module.driver.DriverModule;
 import eu.cloudnetservice.node.command.CommandProvider;
 
-public final class Replacer extends DriverModule {
+public final class Module extends DriverModule {
     private Injector injector;
 
     @ModuleTask(lifecycle = ModuleLifeCycle.LOADED)
     public void onLoad(CommandProvider commandProvider, EventManager eventManager) {
-        injector = Guice.createInjector(new ReplacerConfig(commandProvider, eventManager));
+        injector = Guice.createInjector(new ModuleConfig(commandProvider, eventManager));
 
         injector.getInstance(ConfigManager.class).load();
         injector.getInstance(ConfigManager.class).save();

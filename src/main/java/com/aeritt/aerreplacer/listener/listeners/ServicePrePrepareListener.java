@@ -21,6 +21,6 @@ public class ServicePrePrepareListener {
     @EventListener
     public void onServicePrePrepare(CloudServicePrePrepareEvent event) {
         serviceReplacer.replace(event.service());
-        taskReplacer.replace(event.service());
+        taskReplacer.processReplacement(event.service());
     }
 }

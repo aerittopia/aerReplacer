@@ -1,7 +1,7 @@
 {
   "runtimeModule": false,
   "storesSensitiveData": true,
-  "main": "com.aeritt.aerreplacer.Replacer",
+  "main": "com.aeritt.aerreplacer.Module",
   "name": "${project.artifactId}",
   "group": "com.aeritt.aerreplacer",
   "author": "whereareiam",

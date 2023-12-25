@@ -24,7 +24,6 @@ public class ReplacementSearcher {
     public List<Path> search(List<String> placeholders, Path path) {
         List<Path> result = new ArrayList<>();
 
-        System.out.println(path.toString());
         if (!Files.exists(path)) {
             return result;
         }

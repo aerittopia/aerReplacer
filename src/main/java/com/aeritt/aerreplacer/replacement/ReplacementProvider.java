@@ -1,8 +1,7 @@
 package com.aeritt.aerreplacer.replacement;
 
 import com.aeritt.aerreplacer.config.ReplacementConfig;
-import com.aeritt.aerreplacer.model.ServiceReplacement;
-import com.aeritt.aerreplacer.model.TaskReplacement;
+import com.aeritt.aerreplacer.model.replacement.Replacement;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
@@ -19,8 +18,7 @@ public class ReplacementProvider {
     private final Injector injector;
 
     private final Path replacementsFolder;
-    private List<TaskReplacement> taskReplacements = new ArrayList<>();
-    private List<ServiceReplacement> serviceReplacements = new ArrayList<>();
+    private final List<Replacement> replacements = new ArrayList<>();
 
     @Inject
     public ReplacementProvider(Injector injector, @Named("replacementsFolder") Path replacementsFolder) {
@@ -42,21 +40,16 @@ public class ReplacementProvider {
             ReplacementConfig replacement = injector.getInstance(ReplacementConfig.class);
             replacement.reload(file);
 
-            serviceReplacements.addAll(replacement.services);
-            taskReplacements.addAll(replacement.tasks);
+            replacements.addAll(replacement.services);
+            replacements.addAll(replacement.tasks);
         }
     }
 
-    public List<TaskReplacement> getTaskReplacements() {
-        return taskReplacements;
+    public List<? extends Replacement> getReplacements() {
+        return replacements;
     }
 
     public void clearReplacements() {
-        taskReplacements.clear();
-        serviceReplacements.clear();
-    }
-
-    public void setServiceReplacements(List<ServiceReplacement> serviceReplacements) {
-        this.serviceReplacements = serviceReplacements;
+        replacements.clear();
     }
 }
