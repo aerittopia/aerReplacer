@@ -24,12 +24,12 @@ jobs:
       - name: Extract project details
         id: project_details
         run: |
-          echo "PROJECT_NAME=$(mvn -q -Dexec.executable=echo -Dexec.args='${artifactId}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
-          echo "PROJECT_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
+          echo "PROJECT_NAME=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.artifactId}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
+          echo "PROJECT_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
 
       - name: Build with Maven
         run: |
-          mvn -B -P release package --file pom.xml
+          mvn -B clean package --file pom.xml
 
       - name: Move Artifacts to Common Directory
         run: |
