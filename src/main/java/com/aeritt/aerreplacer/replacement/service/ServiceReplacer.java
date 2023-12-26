@@ -38,15 +38,17 @@ public class ServiceReplacer extends AbstractReplacer<ServiceReplacement> {
                 .filter(replacement -> replacement instanceof ServiceReplacement)
                 .map(replacement -> (ServiceReplacement) replacement)
                 .collect(Collectors.toList());
-        List<String> placeholders = getPlaceholders(replacements.get(0));
-
         replacementContents.clear();
 
-        String taskName = cloudService.serviceId().taskName();
+        String serviceName = cloudService.serviceId().name();
         Path servicePath = cloudService.directory();
 
-        replacements = filterReplacements(replacements, taskName);
+        replacements = filterReplacements(replacements, serviceName);
+        if (replacements.isEmpty()) {
+            return;
+        }
 
+        List<String> placeholders = getPlaceholders(replacements.get(0));
         for (ServiceReplacement replacement : replacements) {
             List<Path> searchResults = search(replacement, placeholders, servicePath);
 

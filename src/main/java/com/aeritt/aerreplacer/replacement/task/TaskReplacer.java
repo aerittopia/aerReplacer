@@ -38,15 +38,17 @@ public class TaskReplacer extends AbstractReplacer<TaskReplacement> {
                 .filter(replacement -> replacement instanceof TaskReplacement)
                 .map(replacement -> (TaskReplacement) replacement)
                 .collect(Collectors.toList());
-        List<String> placeholders = getPlaceholders(replacements.get(0));
-
         replacementContents.clear();
 
         String taskName = cloudService.serviceId().taskName();
         Path servicePath = cloudService.directory();
 
         replacements = filterReplacements(replacements, taskName);
+        if (replacements.isEmpty()) {
+            return;
+        }
 
+        List<String> placeholders = getPlaceholders(replacements.get(0));
         for (TaskReplacement replacement : replacements) {
             List<Path> searchResults = search(replacement, placeholders, servicePath);
 
