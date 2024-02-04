@@ -5,10 +5,10 @@ import com.aeritt.aerreplacer.replacement.task.TaskReplacer;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import eu.cloudnetservice.driver.event.EventListener;
-import eu.cloudnetservice.node.event.service.CloudServicePrePrepareEvent;
+import eu.cloudnetservice.node.event.service.CloudServicePostPrepareEvent;
 
 @Singleton
-public class ServicePrePrepareListener {
+public class ServicePostPrepareListener {
     private final ServiceReplacer serviceReplacer;
     private final TaskReplacer taskReplacer;
 
