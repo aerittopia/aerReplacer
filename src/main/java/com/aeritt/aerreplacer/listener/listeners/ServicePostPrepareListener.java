@@ -13,13 +13,13 @@ public class ServicePostPrepareListener {
     private final TaskReplacer taskReplacer;
 
     @Inject
-    public ServicePrePrepareListener(ServiceReplacer serviceReplacer, TaskReplacer taskReplacer) {
+    public ServicePostPrepareListener(ServiceReplacer serviceReplacer, TaskReplacer taskReplacer) {
         this.serviceReplacer = serviceReplacer;
         this.taskReplacer = taskReplacer;
     }
 
     @EventListener
-    public void onServicePrePrepare(CloudServicePrePrepareEvent event) {
+    public void onServicePostPrepare(CloudServicePostPrepareEvent event) {
         serviceReplacer.processReplacement(event.service());
         taskReplacer.processReplacement(event.service());
     }
