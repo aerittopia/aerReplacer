@@ -1,6 +1,6 @@
 package com.aeritt.aerreplacer.listener;
 
-import com.aeritt.aerreplacer.listener.listeners.CloudServicePostPrepareListener;
+import com.aeritt.aerreplacer.listener.listeners.ServicePostPrepareListener;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
@@ -21,7 +21,7 @@ public class ListenerRegistrar {
 
     public void registerListeners() {
         List<Object> listeners = List.of(
-                injector.getInstance(CloudServicePostPrepareListener.class)
+                injector.getInstance(ServicePostPrepareListener.class)
         );
 
         for (Object listener : listeners) {
