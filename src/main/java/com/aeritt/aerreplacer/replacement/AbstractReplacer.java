@@ -19,90 +19,90 @@ import java.util.stream.Collectors;
 
 @Singleton
 public abstract class AbstractReplacer<T extends Replacement> {
-    protected final Random random = new Random();
-    private final ReplacementSearcher replacementSearcher;
-    private final PlaceholderProvider placeholderProvider;
+	protected final Random random = new Random();
+	private final ReplacementSearcher replacementSearcher;
+	private final PlaceholderProvider placeholderProvider;
 
-    protected AbstractReplacer(ReplacementSearcher replacementSearcher, PlaceholderProvider placeholderProvider) {
-        this.replacementSearcher = replacementSearcher;
-        this.placeholderProvider = placeholderProvider;
-    }
+	protected AbstractReplacer(ReplacementSearcher replacementSearcher, PlaceholderProvider placeholderProvider) {
+		this.replacementSearcher = replacementSearcher;
+		this.placeholderProvider = placeholderProvider;
+	}
 
-    public abstract void processReplacement(CloudService service);
+	public abstract void processReplacement(CloudService service);
 
-    public List<String> getPlaceholders(T replacement) {
-        return switch (replacement.getSearch().type) {
-            case ALL, ALL_SPECIFIC -> replacement.getSearch().placeholders;
-            case RANDOM, RANDOM_SPECIFIC -> Collections.singletonList(
-                    replacement.getSearch().placeholders.get(random.nextInt(replacement.getSearch().placeholders.size()))
-            );
-            case FIRST, FIRST_SPECIFIC -> Collections.singletonList(replacement.getSearch().placeholders.get(0));
-        };
-    }
+	public List<String> getPlaceholders(T replacement) {
+		return switch (replacement.getSearch().type) {
+			case ALL, ALL_SPECIFIC -> replacement.getSearch().placeholders;
+			case RANDOM, RANDOM_SPECIFIC -> Collections.singletonList(
+					replacement.getSearch().placeholders.get(random.nextInt(replacement.getSearch().placeholders.size()))
+			);
+			case FIRST, FIRST_SPECIFIC -> Collections.singletonList(replacement.getSearch().placeholders.get(0));
+		};
+	}
 
-    public List<T> filterReplacements(List<T> replacements, String name) {
-        return replacements.stream()
-                .filter(replacement -> {
-                    for (String task : replacement.getAllowed()) {
-                        if (task.startsWith("$") || task.contains("*")) {
-                            String pattern = task.replace("*", ".*");
-                            if (task.startsWith("$")) {
-                                pattern = pattern.substring(1);
-                            }
-                            if (name.matches(pattern)) {
-                                return true;
-                            }
-                        } else if (name.equals(task)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
-    }
+	public List<T> filterReplacements(List<T> replacements, String name) {
+		return replacements.stream()
+				.filter(replacement -> {
+					for (String task : replacement.getAllowed()) {
+						if (task.startsWith("$") || task.contains("*")) {
+							String pattern = task.replace("*", ".*");
+							if (task.startsWith("$")) {
+								pattern = pattern.substring(1);
+							}
+							if (name.matches(pattern)) {
+								return true;
+							}
+						} else if (name.equals(task)) {
+							return true;
+						}
+					}
+					return false;
+				})
+				.collect(Collectors.toList());
+	}
 
-    public List<Path> search(T replacement, List<String> placeholders, Path servicePath) {
-        List<Path> searchResult = new ArrayList<>();
+	public List<Path> search(T replacement, List<String> placeholders, Path servicePath) {
+		List<Path> searchResult = new ArrayList<>();
 
-        if (replacement.getSearch().type.equals(SearchType.ALL_SPECIFIC)
-                || replacement.getSearch().type.equals(SearchType.RANDOM_SPECIFIC)
-                || replacement.getSearch().type.equals(SearchType.FIRST_SPECIFIC)) {
-            searchResult.addAll(replacementSearcher.search(placeholders, servicePath, replacement.getSearch().paths));
-        } else {
-            searchResult.addAll(replacementSearcher.search(placeholders, servicePath));
-        }
+		if (replacement.getSearch().type.equals(SearchType.ALL_SPECIFIC)
+				|| replacement.getSearch().type.equals(SearchType.RANDOM_SPECIFIC)
+				|| replacement.getSearch().type.equals(SearchType.FIRST_SPECIFIC)) {
+			searchResult.addAll(replacementSearcher.search(placeholders, servicePath, replacement.getSearch().paths));
+		} else {
+			searchResult.addAll(replacementSearcher.search(placeholders, servicePath));
+		}
 
-        return searchResult;
-    }
+		return searchResult;
+	}
 
-    public String getContent(CloudService cloudService, T replacement) {
-        List<String> contentList = replacement.getReplace().content;
-        ReplaceType type = replacement.getReplace().type;
+	public String getContent(CloudService cloudService, T replacement) {
+		List<String> contentList = replacement.getReplace().content;
+		ReplaceType type = replacement.getReplace().type;
 
-        String content = switch (type) {
-            case RANDOM -> contentList.get(random.nextInt(contentList.size()));
-            case FIRST -> contentList.get(0);
-            case CONDITIONAL, EXTERNAL ->
-                // Implement later
-                    null;
-        };
+		String content = switch (type) {
+			case RANDOM -> contentList.get(random.nextInt(contentList.size()));
+			case FIRST -> contentList.get(0);
+			case CONDITIONAL, EXTERNAL ->
+				// Implement later
+					null;
+		};
 
-        return placeholderProvider.replacePlaceholders(cloudService, content);
-    }
+		return placeholderProvider.replacePlaceholders(cloudService, content);
+	}
 
-    public void replace(ReplacementContent replacementContent) {
-        Path path = replacementContent.path();
-        String content = replacementContent.content();
-        String placeholder = replacementContent.placeholder();
+	public void replace(ReplacementContent replacementContent) {
+		Path path = replacementContent.path();
+		String content = replacementContent.content();
+		String placeholder = replacementContent.placeholder();
 
-        try {
-            List<String> lines = Files.readAllLines(path);
-            List<String> modified = lines.stream()
-                    .map(line -> line.replace(placeholder, content))
-                    .collect(Collectors.toList());
-            Files.write(path, modified);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+		try {
+			List<String> lines = Files.readAllLines(path);
+			List<String> modified = lines.stream()
+					.map(line -> line.replace(placeholder, content))
+					.collect(Collectors.toList());
+			Files.write(path, modified);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

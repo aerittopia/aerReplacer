@@ -18,51 +18,51 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class TaskReplacer extends AbstractReplacer<TaskReplacement> {
-    private final ReplacementProvider replacementProvider;
-    private final ReplacementContentFactory replacementContentFactory;
-    private final List<ReplacementContent> replacementContents = new ArrayList<>();
+	private final ReplacementProvider replacementProvider;
+	private final ReplacementContentFactory replacementContentFactory;
+	private final List<ReplacementContent> replacementContents = new ArrayList<>();
 
-    @Inject
-    public TaskReplacer(ReplacementSearcher replacementSearcher, PlaceholderProvider placeholderProvider,
-                        ReplacementProvider replacementProvider, ReplacementContentFactory replacementContentFactory) {
-        super(replacementSearcher, placeholderProvider);
+	@Inject
+	public TaskReplacer(ReplacementSearcher replacementSearcher, PlaceholderProvider placeholderProvider,
+	                    ReplacementProvider replacementProvider, ReplacementContentFactory replacementContentFactory) {
+		super(replacementSearcher, placeholderProvider);
 
-        this.replacementProvider = replacementProvider;
-        this.replacementContentFactory = replacementContentFactory;
-    }
+		this.replacementProvider = replacementProvider;
+		this.replacementContentFactory = replacementContentFactory;
+	}
 
-    @Override
-    public void processReplacement(CloudService cloudService) {
-        List<TaskReplacement> replacements = replacementProvider.getReplacements()
-                .stream()
-                .filter(replacement -> replacement instanceof TaskReplacement)
-                .map(replacement -> (TaskReplacement) replacement)
-                .collect(Collectors.toList());
-        replacementContents.clear();
+	@Override
+	public void processReplacement(CloudService cloudService) {
+		List<TaskReplacement> replacements = replacementProvider.getReplacements()
+				.stream()
+				.filter(replacement -> replacement instanceof TaskReplacement)
+				.map(replacement -> (TaskReplacement) replacement)
+				.collect(Collectors.toList());
+		replacementContents.clear();
 
-        String taskName = cloudService.serviceId().taskName();
-        Path servicePath = cloudService.directory();
+		String taskName = cloudService.serviceId().taskName();
+		Path servicePath = cloudService.directory();
 
-        replacements = filterReplacements(replacements, taskName);
-        if (replacements.isEmpty()) {
-            return;
-        }
+		replacements = filterReplacements(replacements, taskName);
+		if (replacements.isEmpty()) {
+			return;
+		}
 
-        List<String> placeholders = getPlaceholders(replacements.get(0));
-        for (TaskReplacement replacement : replacements) {
-            List<Path> searchResults = search(replacement, placeholders, servicePath);
+		for (TaskReplacement replacement : replacements) {
+			List<String> placeholders = getPlaceholders(replacement);
+			List<Path> searchResults = search(replacement, placeholders, servicePath);
 
-            for (Path path : searchResults) {
-                String content = getContent(cloudService, replacement);
-                for (String placeholder : placeholders) {
-                    ReplacementContent replacementContent = replacementContentFactory.create(path, content, placeholder);
-                    replacementContents.add(replacementContent);
-                }
-            }
-        }
+			for (Path path : searchResults) {
+				String content = getContent(cloudService, replacement);
+				for (String placeholder : placeholders) {
+					ReplacementContent replacementContent = replacementContentFactory.create(path, content, placeholder);
+					replacementContents.add(replacementContent);
+				}
+			}
+		}
 
-        for (ReplacementContent replacementContent : replacementContents) {
-            replace(replacementContent);
-        }
-    }
+		for (ReplacementContent replacementContent : replacementContents) {
+			replace(replacementContent);
+		}
+	}
 }

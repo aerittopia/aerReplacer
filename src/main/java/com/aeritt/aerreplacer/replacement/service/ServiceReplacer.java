@@ -18,52 +18,52 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class ServiceReplacer extends AbstractReplacer<ServiceReplacement> {
-    private final ReplacementProvider replacementProvider;
-    private final ReplacementContentFactory replacementContentFactory;
-    private final List<ReplacementContent> replacementContents = new ArrayList<>();
+	private final ReplacementProvider replacementProvider;
+	private final ReplacementContentFactory replacementContentFactory;
+	private final List<ReplacementContent> replacementContents = new ArrayList<>();
 
-    @Inject
-    public ServiceReplacer(ReplacementSearcher replacementSearcher, PlaceholderProvider placeholderProvider,
-                           ReplacementProvider replacementProvider, ReplacementContentFactory replacementContentFactory) {
-        super(replacementSearcher, placeholderProvider);
+	@Inject
+	public ServiceReplacer(ReplacementSearcher replacementSearcher, PlaceholderProvider placeholderProvider,
+	                       ReplacementProvider replacementProvider, ReplacementContentFactory replacementContentFactory) {
+		super(replacementSearcher, placeholderProvider);
 
-        this.replacementProvider = replacementProvider;
-        this.replacementContentFactory = replacementContentFactory;
-    }
+		this.replacementProvider = replacementProvider;
+		this.replacementContentFactory = replacementContentFactory;
+	}
 
-    @Override
-    public void processReplacement(CloudService cloudService) {
-        List<ServiceReplacement> replacements = replacementProvider.getReplacements()
-                .stream()
-                .filter(replacement -> replacement instanceof ServiceReplacement)
-                .map(replacement -> (ServiceReplacement) replacement)
-                .collect(Collectors.toList());
-        replacementContents.clear();
+	@Override
+	public void processReplacement(CloudService cloudService) {
+		List<ServiceReplacement> replacements = replacementProvider.getReplacements()
+				.stream()
+				.filter(replacement -> replacement instanceof ServiceReplacement)
+				.map(replacement -> (ServiceReplacement) replacement)
+				.collect(Collectors.toList());
+		replacementContents.clear();
 
-        String serviceName = cloudService.serviceId().name();
-        Path servicePath = cloudService.directory();
+		String serviceName = cloudService.serviceId().name();
+		Path servicePath = cloudService.directory();
 
-        replacements = filterReplacements(replacements, serviceName);
-        if (replacements.isEmpty()) {
-            return;
-        }
+		replacements = filterReplacements(replacements, serviceName);
+		if (replacements.isEmpty()) {
+			return;
+		}
 
-        List<String> placeholders = getPlaceholders(replacements.get(0));
-        for (ServiceReplacement replacement : replacements) {
-            List<Path> searchResults = search(replacement, placeholders, servicePath);
+		for (ServiceReplacement replacement : replacements) {
+			List<String> placeholders = getPlaceholders(replacement);
+			List<Path> searchResults = search(replacement, placeholders, servicePath);
 
-            for (Path path : searchResults) {
-                String content = getContent(cloudService, replacement);
-                for (String placeholder : placeholders) {
-                    ReplacementContent replacementContent = replacementContentFactory.create(path, content, placeholder);
-                    replacementContents.add(replacementContent);
-                }
-            }
-        }
+			for (Path path : searchResults) {
+				String content = getContent(cloudService, replacement);
+				for (String placeholder : placeholders) {
+					ReplacementContent replacementContent = replacementContentFactory.create(path, content, placeholder);
+					replacementContents.add(replacementContent);
+				}
+			}
+		}
 
-        for (ReplacementContent replacementContent : replacementContents) {
-            replace(replacementContent);
-        }
-    }
+		for (ReplacementContent replacementContent : replacementContents) {
+			replace(replacementContent);
+		}
+	}
 }
 

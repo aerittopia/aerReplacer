@@ -1,4 +1,4 @@
-package com.aeritt.aerreplacer.listener.listeners;
+package com.aeritt.aerreplacer.listener.service;
 
 import com.aeritt.aerreplacer.replacement.service.ServiceReplacer;
 import com.aeritt.aerreplacer.replacement.task.TaskReplacer;
